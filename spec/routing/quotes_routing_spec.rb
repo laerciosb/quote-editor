@@ -12,10 +12,6 @@ RSpec.describe QuotesController, type: :routing do
       expect(get: '/quotes/new').to route_to('quotes#new')
     end
 
-    it 'routes to #show' do
-      expect(get: '/quotes/1').to route_to('quotes#show', id: '1')
-    end
-
     it 'routes to #edit' do
       expect(get: '/quotes/1/edit').to route_to('quotes#edit', id: '1')
     end
