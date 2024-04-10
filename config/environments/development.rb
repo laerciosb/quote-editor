@@ -72,4 +72,15 @@ Rails.application.configure do
 
   # Raise error when a before_action's only/except options reference missing actions
   config.action_controller.raise_on_missing_callback_actions = true
+
+  # Prevents from writing logs on `log/development.log`
+  logger           = ActiveSupport::Logger.new($stdout)
+  logger.formatter = config.log_formatter
+  config.logger    = ActiveSupport::TaggedLogging.new(logger)
+
+  # Set log_level to `:info` during lograge local testing
+  # config.logger = logger
+  # config.log_formatter = ActiveSupport::Logger::SimpleFormatter.new
+  # config.log_level = :info
+  # config.log_tags = [:request_id, ->(request) { request.headers.env['OTEL_TRACE_ID'] }]
 end

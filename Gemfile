@@ -37,8 +37,6 @@ group :development, :test do
 
   # Ruby library that pretty prints Ruby objects in full color exposing
   # gem 'amazing_print'
-  # help to kill N+1 queries and unused eager loading
-  # gem 'bullet'
   # Use Factory Bot to create objects dynamically
   gem 'factory_bot_rails'
   # Ruby: 2 CPUs = 2x Testing Speed for RSpec, Test::Unit and Cucumber
@@ -59,8 +57,6 @@ group :development do
 
   # Add a comment summarizing the current schema to the top or bottom of each of your
   gem 'annotate'
-  # The tool to avoid various issues due to inconsistencies and inefficiencies.
-  # gem 'database_consistency', require: false
   # RuboCop is a Ruby static code analyzer
   gem 'rubocop', require: false
   # A RuboCop extension focused on enforcing Rails best practices and coding conventions.
