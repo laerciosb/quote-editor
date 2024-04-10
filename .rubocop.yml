@@ -1,0 +1,39 @@
+inherit_from: .rubocop_todo.yml
+
+require:
+  - rubocop-capybara
+  - rubocop-performance
+  - rubocop-rails
+  - rubocop-rspec
+  - rubocop-rspec_rails
+  - rubocop-factory_bot
+
+AllCops:
+  NewCops: disable
+  TargetRubyVersion: 3.3.0
+  StyleGuideBaseURL:  https://rubystyle.guide
+  Exclude:
+    - '**/bin/**/*'
+    - '**/db/schema.rb'
+    - '**/vendor/bundle/**/*'
+
+Style/Documentation:
+  Enabled: false
+Style/ClassAndModuleChildren:
+  Enabled: false
+Style/RedundantFetchBlock:
+  Enabled: false
+Style/HashSyntax:
+  EnforcedShorthandSyntax: never
+
+Layout/MultilineMethodCallIndentation:
+  EnforcedStyle: indented
+Layout/ArgumentAlignment:
+  EnforcedStyle: with_fixed_indentation
+
+Metrics/MethodLength:
+  Exclude:
+    - '**/db/**/*'
+Metrics/BlockLength:
+  Exclude:
+    - '**/config/**/*'

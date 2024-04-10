@@ -1,0 +1,17 @@
+<%= turbo_frame_tag @quote do %>
+  <%= form_with model: @quote, class: 'quote form' do |form| %>
+    <% if @quote.errors.any? %>
+      <div class="error-message">
+        <%= @quote.errors.full_messages.to_sentence.capitalize %>
+      </div>
+    <% end %>
+
+    <div class="form__group">
+      <%= form.label :name, class: 'visually-hidden' %>
+      <%= form.text_field :name, class: 'form__input', autofocus: true, placeholder: 'Name of your quote' %>
+    </div>
+
+    <%= link_to 'Cancel', quotes_path, class: 'btn btn--light' %>
+    <%= form.submit class: 'btn btn--secondary' %>
+  <% end %>
+<% end %>
