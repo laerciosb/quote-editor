@@ -35,16 +35,10 @@ group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem 'debug', platforms: %i[mri mingw]
 
-  # Ruby library that pretty prints Ruby objects in full color exposing
-  # gem 'amazing_print'
   # Use Factory Bot to create objects dynamically
   gem 'factory_bot_rails'
-  # Ruby: 2 CPUs = 2x Testing Speed for RSpec, Test::Unit and Cucumber
-  # gem 'parallel_tests'
   # Use RSpec to execute specs suite
   gem 'rspec-rails'
-  # Shim to load environment variables from .env into ENV in development.
-  # gem 'dotenv-rails'
 end
 
 group :development do
@@ -55,8 +49,6 @@ group :development do
   # Speed up commands on slow machines / big apps [https://github.com/rails/spring]
   # gem 'spring'
 
-  # Add a comment summarizing the current schema to the top or bottom of each of your
-  gem 'annotate'
   # RuboCop is a Ruby static code analyzer
   gem 'rubocop', require: false
   # A RuboCop extension focused on enforcing Rails best practices and coding conventions.
