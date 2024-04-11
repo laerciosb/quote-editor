@@ -17,34 +17,34 @@ RSpec.describe Quote, type: :model do
     it { is_expected.to validate_presence_of(:name) }
   end
 
-  context 'with callbacks' do
-    subject(:quote) { create(:quote) }
+  # context 'with callbacks' do
+  #   subject(:quote) { create(:quote) }
 
-    context 'when broadcasts_to inserts_by prepend on create' do
-      it 'send broadcast to streams channel' do
-        model = quote
+  #   context 'when broadcasts_to inserts_by prepend on create' do
+  #     it 'send broadcast to streams channel' do
+  #       model = quote
 
-        expect { model.save }.to have_broadcasted_to('quotes')
-          .from_channel(Turbo::StreamsChannel).exactly(:once)
-      end
-    end
+  #       expect { model.save }.to have_broadcasted_to('quotes')
+  #         .from_channel(Turbo::StreamsChannel).exactly(:once)
+  #     end
+  #   end
 
-    context 'when broadcasts_to inserts_by prepend on update' do
-      it 'send broadcast to streams channel' do
-        model = quote
+  #   context 'when broadcasts_to inserts_by prepend on update' do
+  #     it 'send broadcast to streams channel' do
+  #       model = quote
 
-        expect { model.update(name: 'test') }.to have_broadcasted_to('quotes')
-          .from_channel(Turbo::StreamsChannel).exactly(:once)
-      end
-    end
+  #       expect { model.update(name: 'test') }.to have_broadcasted_to('quotes')
+  #         .from_channel(Turbo::StreamsChannel).exactly(:once)
+  #     end
+  #   end
 
-    context 'when broadcasts_to inserts_by prepend on destroy' do
-      it 'send broadcast to streams channel' do
-        model = quote
+  #   context 'when broadcasts_to inserts_by prepend on destroy' do
+  #     it 'send broadcast to streams channel' do
+  #       model = quote
 
-        expect { model.destroy }.to have_broadcasted_to('quotes')
-          .from_channel(Turbo::StreamsChannel).exactly(:once)
-      end
-    end
-  end
+  #       expect { model.destroy }.to have_broadcasted_to('quotes')
+  #         .from_channel(Turbo::StreamsChannel).exactly(:once)
+  #     end
+  #   end
+  # end
 end

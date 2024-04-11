@@ -25,14 +25,8 @@ class QuotesController < ApplicationController
     @quote = Quote.new(quote_params)
 
     if @quote.save
-      # respond_to do |format|
-      #   format.html { redirect_to quotes_path, notice: 'Quote was successfully created.' }
-      #   format.turbo_stream
-      # end
-      # render turbo_stream: [
-      #   turbo_stream.prepend('quotes', @quote),
-      #   turbo_stream.update('new_quote', '')
-      # ]
+      @quote.broadcast_prepend_to('quotes')
+
       render :create, formats: :turbo_stream
     else
       render :form, status: :unprocessable_entity
@@ -42,6 +36,8 @@ class QuotesController < ApplicationController
   # PATCH/PUT /quotes/1
   def update
     if @quote.update(quote_params)
+      @quote.broadcast_replace_to('quotes')
+
       render turbo_stream: turbo_stream.replace(@quote, @quote)
     else
       render :form, status: :unprocessable_entity
@@ -51,6 +47,7 @@ class QuotesController < ApplicationController
   # DELETE /quotes/1
   def destroy
     @quote.destroy!
+    @quote.broadcast_remove_to('quotes')
 
     render turbo_stream: turbo_stream.remove(@quote)
   end
