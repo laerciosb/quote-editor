@@ -35,7 +35,7 @@ class QuotesController < ApplicationController
       # ]
       render :create
     else
-      render :form, status: :unprocessable_entity
+      render :form, status: :unprocessable_entity, formats: :html
     end
   end
 
@@ -44,7 +44,7 @@ class QuotesController < ApplicationController
     if @quote.update(quote_params)
       render turbo_stream: turbo_stream.replace(@quote, @quote)
     else
-      render :form, status: :unprocessable_entity
+      render :form, status: :unprocessable_entity, formats: :html
     end
   end
 

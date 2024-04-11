@@ -19,25 +19,17 @@ RSpec.describe '/quotes', type: :request do
   # Quote. As you add validations to Quote, be sure to
   # adjust the attributes here as well.
   let(:valid_attributes) do
-    skip('Add a hash of attributes valid for your model')
+    { name: 'String' }
   end
 
   let(:invalid_attributes) do
-    skip('Add a hash of attributes invalid for your model')
+    { name: nil }
   end
 
   describe 'GET /index' do
     it 'renders a successful response' do
       Quote.create! valid_attributes
       get quotes_url
-      expect(response).to be_successful
-    end
-  end
-
-  describe 'GET /show' do
-    it 'renders a successful response' do
-      quote = Quote.create! valid_attributes
-      get quote_url(quote)
       expect(response).to be_successful
     end
   end
@@ -65,9 +57,10 @@ RSpec.describe '/quotes', type: :request do
         end.to change(Quote, :count).by(1)
       end
 
-      it 'redirects to the created quote' do
-        post quotes_url, params: { quote: valid_attributes }
-        expect(response).to redirect_to(quote_url(Quote.last))
+      it 'send broadcast to streams channel' do
+        expect do
+          post quotes_url, params: { quote: valid_attributes }
+        end.to have_broadcasted_to('quotes').from_channel(Turbo::StreamsChannel).exactly(:once)
       end
     end
 
@@ -88,7 +81,7 @@ RSpec.describe '/quotes', type: :request do
   describe 'PATCH /update' do
     context 'with valid parameters' do
       let(:new_attributes) do
-        skip('Add a hash of attributes valid for your model')
+        { name: 'String2' }
       end
 
       it 'updates the requested quote' do
@@ -98,11 +91,11 @@ RSpec.describe '/quotes', type: :request do
         skip('Add assertions for updated state')
       end
 
-      it 'redirects to the quote' do
+      it 'send broadcast to streams channel' do
         quote = Quote.create! valid_attributes
-        patch quote_url(quote), params: { quote: new_attributes }
-        quote.reload
-        expect(response).to redirect_to(quote_url(quote))
+        expect do
+          patch quote_url(quote), params: { quote: new_attributes }
+        end.to have_broadcasted_to('quotes').from_channel(Turbo::StreamsChannel).exactly(:once)
       end
     end
 
@@ -123,10 +116,12 @@ RSpec.describe '/quotes', type: :request do
       end.to change(Quote, :count).by(-1)
     end
 
-    it 'redirects to the quotes list' do
+    it 'send broadcast to streams channel' do
       quote = Quote.create! valid_attributes
-      delete quote_url(quote)
-      expect(response).to redirect_to(quotes_url)
+
+      expect do
+        delete quote_url(quote)
+      end.to have_broadcasted_to('quotes').from_channel(Turbo::StreamsChannel).exactly(:once)
     end
   end
 end

@@ -35,6 +35,8 @@ group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
   gem 'debug', platforms: %i[mri mingw]
 
+  # Ruby library that pretty prints Ruby objects in full color exposing
+  gem 'amazing_print'
   # Use Factory Bot to create objects dynamically
   gem 'factory_bot_rails'
   # Use RSpec to execute specs suite
