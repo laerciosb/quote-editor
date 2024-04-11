@@ -3,5 +3,5 @@
 class Quote < ApplicationRecord
   validates :name, presence: true
 
-  broadcasts_to ->(_quote) { 'quotes' }, inserts_by: :prepend
+  broadcasts_to ->(_) { 'quotes' }, inserts_by: :prepend
 end

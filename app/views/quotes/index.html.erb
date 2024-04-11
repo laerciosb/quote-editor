@@ -6,6 +6,7 @@
   </div>
 
   <%= turbo_frame_tag 'new_quote' %>
+  <%= turbo_stream_from 'quotes' %>
   <%= turbo_frame_tag 'quotes' do %>
     <%= render @quotes %>
   <% end %>
