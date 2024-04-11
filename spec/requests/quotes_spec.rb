@@ -18,10 +18,10 @@ RSpec.describe '/quotes', type: :request do
   # This should return the minimal set of attributes required to create a valid
   # Quote. As you add validations to Quote, be sure to
   # adjust the attributes here as well.
+  let(:quote) { create(:quote) }
   let(:valid_attributes) do
     { name: 'String' }
   end
-
   let(:invalid_attributes) do
     { name: nil }
   end
@@ -43,7 +43,6 @@ RSpec.describe '/quotes', type: :request do
 
   describe 'GET /edit' do
     it 'renders a successful response' do
-      quote = Quote.create! valid_attributes
       get edit_quote_url(quote)
       expect(response).to be_successful
     end
@@ -79,20 +78,20 @@ RSpec.describe '/quotes', type: :request do
   end
 
   describe 'PATCH /update' do
+    before { quote }
+
     context 'with valid parameters' do
       let(:new_attributes) do
         { name: 'String2' }
       end
 
       it 'updates the requested quote' do
-        quote = Quote.create! valid_attributes
         patch quote_url(quote), params: { quote: new_attributes }
         quote.reload
-        skip('Add assertions for updated state')
+        expect(quote.name).to eq('String2')
       end
 
       it 'send broadcast to streams channel' do
-        quote = Quote.create! valid_attributes
         expect do
           patch quote_url(quote), params: { quote: new_attributes }
         end.to have_broadcasted_to('quotes').from_channel(Turbo::StreamsChannel).exactly(:once)
@@ -101,7 +100,6 @@ RSpec.describe '/quotes', type: :request do
 
     context 'with invalid parameters' do
       it "renders a response with 422 status (i.e. to display the 'edit' template)" do
-        quote = Quote.create! valid_attributes
         patch quote_url(quote), params: { quote: invalid_attributes }
         expect(response).to have_http_status(:unprocessable_entity)
       end
@@ -109,16 +107,15 @@ RSpec.describe '/quotes', type: :request do
   end
 
   describe 'DELETE /destroy' do
+    before { quote }
+
     it 'destroys the requested quote' do
-      quote = Quote.create! valid_attributes
       expect do
         delete quote_url(quote)
       end.to change(Quote, :count).by(-1)
     end
 
     it 'send broadcast to streams channel' do
-      quote = Quote.create! valid_attributes
-
       expect do
         delete quote_url(quote)
       end.to have_broadcasted_to('quotes').from_channel(Turbo::StreamsChannel).exactly(:once)

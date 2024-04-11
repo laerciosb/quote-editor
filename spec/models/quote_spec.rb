@@ -20,6 +20,15 @@ RSpec.describe Quote, type: :model do
   context 'with callbacks' do
     subject(:quote) { create(:quote) }
 
+    context 'when broadcasts_to inserts_by prepend on create' do
+      it 'send broadcast to streams channel' do
+        model = quote
+
+        expect { model.save }.to have_broadcasted_to('quotes')
+          .from_channel(Turbo::StreamsChannel).exactly(:once)
+      end
+    end
+
     context 'when broadcasts_to inserts_by prepend on update' do
       it 'send broadcast to streams channel' do
         model = quote
@@ -34,15 +43,6 @@ RSpec.describe Quote, type: :model do
         model = quote
 
         expect { model.destroy }.to have_broadcasted_to('quotes')
-          .from_channel(Turbo::StreamsChannel).exactly(:once)
-      end
-    end
-
-    context 'when broadcasts_to inserts_by prepend on create' do
-      it 'send broadcast to streams channel' do
-        model = quote
-
-        expect { model.save }.to have_broadcasted_to('quotes')
           .from_channel(Turbo::StreamsChannel).exactly(:once)
       end
     end
