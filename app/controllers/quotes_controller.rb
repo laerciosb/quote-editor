@@ -25,7 +25,7 @@ class QuotesController < ApplicationController
     @quote = Quote.new(quote_params)
 
     if @quote.save
-      @quote.broadcast_prepend_to('quotes')
+      @quote.broadcast_prepend_to(:quotes)
 
       render :create, formats: :turbo_stream
     else
@@ -36,7 +36,7 @@ class QuotesController < ApplicationController
   # PATCH/PUT /quotes/1
   def update
     if @quote.update(quote_params)
-      @quote.broadcast_replace_to('quotes')
+      @quote.broadcast_replace_to(:quotes)
 
       render turbo_stream: turbo_stream.replace(@quote, @quote)
     else
@@ -47,7 +47,7 @@ class QuotesController < ApplicationController
   # DELETE /quotes/1
   def destroy
     @quote.destroy!
-    @quote.broadcast_remove_to('quotes')
+    @quote.broadcast_remove_to(:quotes)
 
     render turbo_stream: turbo_stream.remove(@quote)
   end
