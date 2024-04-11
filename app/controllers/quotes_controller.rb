@@ -33,9 +33,9 @@ class QuotesController < ApplicationController
       #   turbo_stream.prepend('quotes', @quote),
       #   turbo_stream.update('new_quote', '')
       # ]
-      render :create
+      render :create, formats: :turbo_stream
     else
-      render :form, status: :unprocessable_entity, formats: :html
+      render :form, status: :unprocessable_entity
     end
   end
 
@@ -44,7 +44,7 @@ class QuotesController < ApplicationController
     if @quote.update(quote_params)
       render turbo_stream: turbo_stream.replace(@quote, @quote)
     else
-      render :form, status: :unprocessable_entity, formats: :html
+      render :form, status: :unprocessable_entity
     end
   end
 
