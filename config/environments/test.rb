@@ -66,4 +66,11 @@ Rails.application.configure do
   logger           = ActiveSupport::Logger.new($stdout)
   logger.formatter = config.log_formatter
   config.logger    = ActiveSupport::TaggedLogging.new(logger)
+
+  # Keep an eye on those nasty n + 1 queries
+  config.after_initialize do
+    Bullet.enable        = true
+    Bullet.bullet_logger = true
+    Bullet.raise         = true # raise an error if n+1 query occurs
+  end
 end

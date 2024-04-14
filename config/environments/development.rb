@@ -83,4 +83,14 @@ Rails.application.configure do
   # config.log_formatter = ActiveSupport::Logger::SimpleFormatter.new
   # config.log_level = :info
   # config.log_tags = [:request_id, ->(request) { request.headers.env['OTEL_TRACE_ID'] }]
+
+  # Keep an eye on those nasty n + 1 queries
+  config.after_initialize do
+    Bullet.enable        = true
+    Bullet.alert         = true
+    Bullet.bullet_logger = true
+    Bullet.console       = true
+    Bullet.rails_logger  = true
+    Bullet.add_footer    = true
+  end
 end
