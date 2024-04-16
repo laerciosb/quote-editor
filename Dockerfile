@@ -1,34 +1,49 @@
 # syntax = docker/dockerfile:1
 
+################################################################################
+# Base
+################################################################################
+
 # Make sure RUBY_VERSION matches the Ruby version in .ruby-version and Gemfile
 ARG RUBY_VERSION=3.3.0
-FROM registry.docker.com/library/ruby:$RUBY_VERSION-slim as base
+FROM registry.docker.com/library/ruby:$RUBY_VERSION-alpine AS base
 
 # Rails app lives here
 WORKDIR /rails
 
 # Set production environment
-ENV RAILS_ENV="production" \
+ENV LANG="C.UTF-8" \
+    RAILS_ENV="production" \
     BUNDLE_DEPLOYMENT="1" \
-    BUNDLE_PATH="/usr/local/bundle" \
-    BUNDLE_WITHOUT="development"
+    BUNDLE_WITHOUT="development test" \
+    BUNDLE_PATH="/usr/local/bundle"
 
+# Add default dependencies
+RUN apk update && \
+    apk upgrade --no-cache && \
+    apk add --no-cache --update postgresql-dev bash tzdata
+
+################################################################################
+# Builder
+################################################################################
 
 # Throw-away build stage to reduce size of final image
-FROM base as build
+FROM base AS builder
 
 # Install packages needed to build gems
-RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y build-essential git libpq-dev pkg-config
-
-# Install application gems
-COPY Gemfile Gemfile.lock ./
-RUN bundle install && \
-    rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
-    bundle exec bootsnap precompile --gemfile
+RUN apk update && \
+    apk upgrade --no-cache && \
+    apk add --no-cache --update build-base jemalloc-dev
 
 # Copy application code
 COPY . .
+
+# Builder Dependencies and remove unneeded files (cached *.gem, *.o, *.c)
+RUN gem install bundler -v "$(grep -A 1 'BUNDLED WITH' Gemfile.lock | tail -n 1)" --no-document && \
+    bundle install --jobs "$(nproc)" --retry 3 && \
+    rm -rf ~/.bundle/ "${BUNDLE_PATH}"/ruby/*/cache "${BUNDLE_PATH}"/ruby/*/bundler/gems/*/.git && \
+    find "${BUNDLE_PATH}"/ -name "*.c" -delete -o -name "*.o" -delete -o -name "*.gem" -delete && \
+    bundle exec bootsnap precompile --gemfile
 
 # Precompile bootsnap code for faster boot times
 RUN bundle exec bootsnap precompile app/ lib/
@@ -36,27 +51,27 @@ RUN bundle exec bootsnap precompile app/ lib/
 # Precompiling assets for production without requiring secret RAILS_MASTER_KEY
 RUN SECRET_KEY_BASE_DUMMY=1 ./bin/rails assets:precompile
 
+################################################################################
+# Production
+################################################################################
 
-# Final stage for app image
-FROM base
+# System Dependencies
+FROM base AS runtime
 
-# Install packages needed for deployment
-RUN apt-get update -qq && \
-    apt-get install --no-install-recommends -y curl postgresql-client && \
-    rm -rf /var/lib/apt/lists /var/cache/apt/archives
+# Builder Arguments
+ARG NON_ROOT_UID=1000
 
-# Copy built artifacts: gems, application
-COPY --from=build /usr/local/bundle /usr/local/bundle
-COPY --from=build /rails /rails
+# System Enviromnents
+ENV LD_PRELOAD=/usr/lib/libjemalloc.so.2 \
+    MALLOC_CONF="narenas:2,background_thread:true,thp:never,dirty_decay_ms:1000,muzzy_decay_ms:0" \
+    RUBY_YJIT_ENABLE=1
+
+# From images
+COPY --from=builder /usr/lib/libjemalloc.so.2 /usr/lib/
+COPY --from=builder /usr/local/bundle /usr/local/bundle
+COPY --from=builder /rails /rails
 
 # Run and own only the runtime files as a non-root user for security
-RUN useradd rails --create-home --shell /bin/bash && \
-    chown -R rails:rails db log tmp
+RUN adduser -D -u $NON_ROOT_UID -g $NON_ROOT_UID -s /bin/bash rails && \
+    chown -R rails:rails /rails
 USER rails:rails
-
-# Entrypoint prepares the database.
-ENTRYPOINT ["/rails/bin/docker-entrypoint"]
-
-# Start the server by default, this can be overwritten at runtime
-EXPOSE 3000
-CMD ["./bin/rails", "server"]

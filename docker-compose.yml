@@ -1,0 +1,77 @@
+version: '3.9'
+
+services:
+  ################################################################################
+  # APPS
+  ################################################################################
+  app:
+    container_name: quote-editor
+    build: .
+    env_file:
+      - ./.env.dev
+    depends_on:
+      - postgres
+      - redis
+    environment:
+      OTEL_SERVICE_NAME: quote-editor-dev
+    entrypoint: ./bin/entry
+    command: bundle exec puma
+    ports:
+      - 3000:3000
+    volumes:
+      - .:/usr/src/api
+      - bundle_data:/usr/src/api/.bundle
+    deploy:
+      resources:
+        limits:
+          memory: 512M
+        reservations:
+          memory: 256M
+
+  ################################################################################
+  # DEPENDENCIES
+  ################################################################################
+  postgres:
+    image: postgres:alpine
+    container_name: postgres
+    environment:
+      POSTGRES_HOST_AUTH_METHOD: trust
+    ports:
+      - 5432:5432
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:alpine
+    container_name: redis
+    ports:
+      - 6379:6379
+    volumes:
+      - redis_data:/data
+
+  ################################################################################
+  # SUPPORT
+  ################################################################################
+  jaeger:
+    container_name: jaeger
+    image: jaegertracing/all-in-one:latest
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+    ports:
+      - 16686:16686
+      - 4318:4318
+    volumes:
+      - jaeger_data:/tmp
+
+  # mailcatcher:
+  #   container_name: mailcatcher
+  #   image: schickling/mailcatcher
+  #   ports:
+  #   - 1080:1080
+  #   - 1025:1025
+
+volumes:
+  bundle_data:
+  postgres_data:
+  redis_data:
+  jaeger_data:

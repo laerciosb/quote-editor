@@ -21,7 +21,9 @@ gem 'stimulus-rails'
 # Use Dart SASS [https://github.com/rails/dartsass-rails]
 gem 'dartsass-rails'
 # Use Redis adapter to run Action Cable in production
-# gem 'redis', '>= 4.0.1'
+gem 'redis', '>= 4.0.1'
+# Ruby wrapper for hiredis
+gem 'hiredis'
 # Use Kredis to get higher-level data types in Redis [https://github.com/rails/kredis]
 # gem 'kredis'
 # Use Active Model has_secure_password [https://guides.rubyonrails.org/active_model_basics.html#securepassword]

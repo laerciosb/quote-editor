@@ -34,4 +34,5 @@ required = constants.map do |key, value|
   key.tap { Rails.logger.info("Required variable: #{key}") }
 end
 
+return if ActiveRecord::Type::Boolean.new.cast(ENV['SECRET_KEY_BASE_DUMMY'])
 raise 'Constants missing, check config/initializers/01_constants.rb' if !Rails.env.test? && required.any?
