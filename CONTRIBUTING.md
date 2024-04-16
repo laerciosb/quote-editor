@@ -9,6 +9,7 @@ https://railsatscale.com/2023-12-04-ruby-3-3-s-yjit-faster-while-using-less-memo
 https://speed.yjit.org/memory_timeline.html#railsbench
 https://github.com/Shopify/yjit
 https://gist.github.com/jjb/9ff0d3f622c8bbe904fe7a82e35152fc
+https://mailsnag.com/blog/optimized-ruby-dockerfile/
 
 ENV LD_PRELOAD=/usr/lib/libjemalloc.so.2 \
     MALLOC_CONF="narenas:2,background_thread:true,thp:never,dirty_decay_ms:1000,muzzy_decay_ms:0" \
